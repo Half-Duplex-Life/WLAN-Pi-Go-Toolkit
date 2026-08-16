@@ -1,0 +1,7 @@
+*.log
+captures/
+reports/
+.DS_Store
+*.tmp
+*.pcap
+*.pcapng
