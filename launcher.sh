@@ -115,13 +115,7 @@ do
             ;;
 
         5)
-            if [[ -x "${SCRIPT_DIR}/lib/survey.sh" ]]; then
-                bash "${SCRIPT_DIR}/lib/survey.sh" scan
-            else
-                ui_title "RF SURVEY"
-                ui_status_warn "Module not implemented yet."
-                ui_pause
-            fi
+            bash "${SCRIPT_DIR}/lib/survey_menu.sh"
             ;;
 
         6)
