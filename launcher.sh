@@ -100,7 +100,7 @@ do
             ;;
 
         8)
-            not_implemented "CLIENT PROFILE DASHBOARD"
+            "${SCRIPT_DIR}/lib/dashboard.sh" show
             ;;
 
         9)
