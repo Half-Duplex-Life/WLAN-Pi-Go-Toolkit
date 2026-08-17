@@ -38,6 +38,7 @@ run_profile() {
     echo
 
     ui_status_info "Deploying profiler configuration..."
+
     scp -q "${config_file}" \
         "${REMOTE_HOST}:${remote_config}"
 
@@ -59,28 +60,32 @@ run_profile() {
     return "${rc}"
 }
 
-case "$1" in
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
-    wpa3)
-        run_profile \
-            "Enterprise WPA3 / Wi-Fi 7" \
-            "${PROFILE_WPA3}"
-        ;;
+    case "$1" in
 
-    wpa2)
-        run_profile \
-            "Enterprise WPA2 / Wi-Fi 6" \
-            "${PROFILE_WPA2}"
-        ;;
+        wpa3)
+            run_profile \
+                "Enterprise WPA3 / Wi-Fi 7" \
+                "${PROFILE_WPA3}"
+            ;;
 
-    *)
-        echo
-        echo "Usage:"
-        echo
-        echo "  profiler.sh wpa3"
-        echo "  profiler.sh wpa2"
-        echo
-        exit 1
-        ;;
+        wpa2)
+            run_profile \
+                "Enterprise WPA2 / Wi-Fi 6" \
+                "${PROFILE_WPA2}"
+            ;;
 
-esac
+        *)
+            echo
+            echo "Usage:"
+            echo
+            echo "  profiler.sh wpa3"
+            echo "  profiler.sh wpa2"
+            echo
+            exit 1
+            ;;
+
+    esac
+
+fi

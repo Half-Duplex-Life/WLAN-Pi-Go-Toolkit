@@ -10,9 +10,14 @@ PROJECT_ROOT="$(cd "${LIB_DIR}/.." && pwd)"
 CONFIG_FILE="${PROJECT_ROOT}/toolkit.conf"
 
 if [[ -f "${CONFIG_FILE}" ]]; then
-    # shellcheck disable=SC1090
     source "${CONFIG_FILE}"
 fi
+
+# Local source-tree root. Never overwrite this with the remote deployment path.
+export WET_SOURCE_ROOT="${PROJECT_ROOT}"
+
+# Runtime/deployment location on the WLAN Pi.
+export WET_INSTALL_ROOT="${WET_INSTALL_ROOT:-/home/wlanpi/wlanpi-toolkit}"
 
 export WET_NAME="${TOOLKIT_NAME:-WLAN Pi Wireless Engineering Toolkit}"
 export WET_VERSION="${TOOLKIT_VERSION:-1.0.0}"
