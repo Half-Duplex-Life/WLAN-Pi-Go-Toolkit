@@ -50,11 +50,11 @@ show_survey() {
                 channel="-"
 
             if (freq >= 2400 && freq < 2500)
-                band="2.4"
+                band="2.4 GHz"
             else if (freq >= 4900 && freq < 5950)
-                band="5"
+                band="5 GHz"
             else if (freq >= 5955)
-                band="6"
+                band="6 GHz"
             else
                 band="?"
 
