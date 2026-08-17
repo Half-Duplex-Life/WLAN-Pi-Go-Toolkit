@@ -11,7 +11,6 @@ TOOLKIT_HOME="$(cd "${SCRIPT_DIR}/.." && pwd)"
 source "${TOOLKIT_HOME}/lib/common.sh"
 source "${TOOLKIT_HOME}/lib/ui.sh"
 
-REMOTE_HOST="${WET_USER:-wlanpi}@${WET_HOST:-198.18.42.1}"
 REMOTE_PROFILER="/opt/wlanpi-profiler/bin/profiler"
 
 PROFILE_WPA3="${TOOLKIT_HOME}/profiles/wifi7-ft-wpa3-5g.ini"
@@ -21,7 +20,6 @@ run_profile() {
 
     local profile_name="$1"
     local config_file="$2"
-    local remote_config="/tmp/wet-profiler-$(basename "${config_file}")"
 
     ui_title "CLIENT PROFILER"
 
@@ -33,29 +31,35 @@ run_profile() {
         return 1
     fi
 
+    if [[ ! -x "${REMOTE_PROFILER}" ]]; then
+        ui_status_error "WLAN Pi Profiler binary not found:"
+        echo
+        echo " ${REMOTE_PROFILER}"
+        ui_pause
+        return 1
+    fi
+
     ui_status_info "Profile : ${profile_name}"
     ui_status_info "Config  : ${config_file}"
     echo
 
-    ui_status_info "Deploying profiler configuration..."
-
-    scp -q "${config_file}" \
-        "${REMOTE_HOST}:${remote_config}"
-
-    ui_status_ok "Profiler configuration deployed"
+    ui_status_ok "Using local WLAN Pi Profiler installation"
     echo
-
-    ui_status_info "Starting WLAN Pi Profiler..."
     echo "Press CTRL+C to stop the profiler."
     echo
 
-    ssh -t "${REMOTE_HOST}" \
-        "sudo ${REMOTE_PROFILER} --config '${remote_config}'"
+    sudo "${REMOTE_PROFILER}" --config "${config_file}"
 
     local rc=$?
 
-    ssh "${REMOTE_HOST}" \
-        "rm -f '${remote_config}'" >/dev/null 2>&1 || true
+    echo
+    if [[ ${rc} -eq 0 ]]; then
+        ui_status_ok "Profiler exited normally"
+    else
+        ui_status_warn "Profiler exited with status ${rc}"
+    fi
+
+    ui_pause
 
     return "${rc}"
 }
