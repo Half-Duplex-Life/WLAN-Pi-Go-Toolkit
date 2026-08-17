@@ -5,15 +5,17 @@
 # Common Library
 ###############################################################################
 
-export WET_NAME="WLAN Pi Wireless Engineering Toolkit"
-export WET_VERSION="1.0.0"
+LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${LIB_DIR}/.." && pwd)"
+CONFIG_FILE="${PROJECT_ROOT}/toolkit.conf"
 
-CONFIG_FILE="$(dirname "$0")/../toolkit.conf"
-
-if [[ -f "$CONFIG_FILE" ]]; then
+if [[ -f "${CONFIG_FILE}" ]]; then
     # shellcheck disable=SC1090
-    source "$CONFIG_FILE"
+    source "${CONFIG_FILE}"
 fi
+
+export WET_NAME="${TOOLKIT_NAME:-WLAN Pi Wireless Engineering Toolkit}"
+export WET_VERSION="${TOOLKIT_VERSION:-1.0.0}"
 
 timestamp() {
     date '+%Y-%m-%d %H:%M:%S'
@@ -29,17 +31,13 @@ pause() {
 }
 
 ensure_directory() {
-
     local dir="$1"
-
-    [[ -d "$dir" ]] || mkdir -p "$dir"
+    [[ -d "${dir}" ]] || mkdir -p "${dir}"
 }
 
 die() {
-
     echo
     echo "[ERROR] $1"
     echo
-
     exit 1
 }
