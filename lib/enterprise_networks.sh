@@ -143,6 +143,7 @@ analyze_enterprise() {
     if [[ "${total}" -gt 0 ]]; then
         local strongest
         strongest="$(sort -t'|' -k5,5nr "${parsed}" | head -1)"
+
         printf " %-24s %s dBm (%s)\n" \
             "Strongest Signal" \
             "$(echo "${strongest}" | awk -F'|' '{print $5}')" \
