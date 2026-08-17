@@ -76,11 +76,15 @@ do
             ;;
 
         2)
-            "${SCRIPT_DIR}/lib/profiler.sh" wpa3
+            echo
+            ui_status_info "Launching 802.11be (EHT) WPA3 Profiler..."
+            bash "${SCRIPT_DIR}/lib/profiler.sh" wpa3
             ;;
 
         3)
-            "${SCRIPT_DIR}/lib/profiler.sh" wpa2
+            echo
+            ui_status_info "Launching 802.11ax (HE) WPA2 Profiler..."
+            bash "${SCRIPT_DIR}/lib/profiler.sh" wpa2
             ;;
 
         4)
@@ -100,7 +104,9 @@ do
             ;;
 
         8)
-            "${SCRIPT_DIR}/lib/dashboard.sh" show
+            echo
+            ui_status_info "Launching Client Profile Dashboard..."
+            bash "${SCRIPT_DIR}/lib/dashboard.sh" show
             ;;
 
         9)

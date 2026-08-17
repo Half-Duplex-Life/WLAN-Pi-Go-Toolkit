@@ -23,15 +23,35 @@ latest_report() {
         cut -d' ' -f2-
 }
 
-extract_field() {
+extract_colon_field() {
     local label="$1"
     local file="$2"
 
-    awk -F'  +' -v label="${label}" '
+    awk -v label="${label}" '
         index($0, label) == 1 {
-            sub("^[[:space:]]*" label "[[:space:]]+", "", $0)
-            print
+            value = substr($0, length(label) + 1)
+            sub(/^[[:space:]]+/, "", value)
+            print value
             exit
+        }
+    ' "${file}"
+}
+
+extract_dash_field() {
+    local label="$1"
+    local file="$2"
+
+    awk -v label="${label}" '
+        $0 ~ /^[[:space:]]*-[[:space:]]/ {
+            line = $0
+            sub(/^[[:space:]]*-[[:space:]]*/, "", line)
+
+            if (index(line, label) == 1) {
+                value = substr(line, length(label) + 1)
+                sub(/^[[:space:]]+/, "", value)
+                print value
+                exit
+            }
         }
     ' "${file}"
 }
@@ -62,12 +82,12 @@ show_dashboard() {
 
     local vendor chipset mac ssid band channel
 
-    vendor="$(extract_field "- OUI manufacturer lookup:" "${report}")"
-    chipset="$(extract_field "- Chipset lookup:" "${report}")"
-    mac="$(extract_field "- Client MAC:" "${report}")"
-    ssid="$(extract_field "- SSID:" "${report}")"
-    band="$(extract_field "- Frequency band:" "${report}")"
-    channel="$(extract_field "- Capture channel:" "${report}")"
+    vendor="$(extract_dash_field "- OUI manufacturer lookup:" "${report}")"
+    chipset="$(extract_dash_field "- Chipset lookup:" "${report}")"
+    mac="$(extract_dash_field "- Client MAC:" "${report}")"
+    ssid="$(extract_dash_field "- SSID:" "${report}")"
+    band="$(extract_dash_field "- Frequency band:" "${report}")"
+    channel="$(extract_dash_field "- Capture channel:" "${report}")"
 
     printf " %-20s %s\n" "Vendor" "${vendor}"
     printf " %-20s %s\n" "Chipset" "${chipset}"
@@ -81,9 +101,9 @@ show_dashboard() {
 
     local dot11k dot11r dot11v
 
-    dot11k="$(extract_field "802.11k" "${report}")"
-    dot11r="$(extract_field "802.11r" "${report}")"
-    dot11v="$(extract_field "802.11v" "${report}")"
+    dot11k="$(extract_colon_field "802.11k" "${report}")"
+    dot11r="$(extract_colon_field "802.11r" "${report}")"
+    dot11v="$(extract_colon_field "802.11v" "${report}")"
 
     printf " %-20s %s\n" "802.11k" "${dot11k}"
     printf " %-20s %s\n" "802.11r" "${dot11r}"
@@ -94,12 +114,12 @@ show_dashboard() {
 
     local dot11n dot11ac nss ac160 dot11ax dot11be
 
-    dot11n="$(extract_field "802.11n" "${report}")"
-    dot11ac="$(extract_field "802.11ac" "${report}")"
-    nss="$(extract_field "802.11n/HT NSS" "${report}")"
-    ac160="$(extract_field "802.11ac/160 MHz" "${report}")"
-    dot11ax="$(extract_field "802.11ax" "${report}")"
-    dot11be="$(extract_field "802.11be" "${report}")"
+    dot11n="$(extract_colon_field "802.11n" "${report}")"
+    dot11ac="$(extract_colon_field "802.11ac" "${report}")"
+    nss="$(extract_colon_field "802.11n/HT NSS" "${report}")"
+    ac160="$(extract_colon_field "802.11ac/160 MHz" "${report}")"
+    dot11ax="$(extract_colon_field "802.11ax" "${report}")"
+    dot11be="$(extract_colon_field "802.11be" "${report}")"
 
     printf " %-20s %s\n" "802.11n" "${dot11n}"
     printf " %-20s %s\n" "802.11ac" "${dot11ac}"
@@ -113,10 +133,10 @@ show_dashboard() {
 
     local akm pairwise mfp group
 
-    akm="$(extract_field "AKM" "${report}")"
-    pairwise="$(extract_field "Pairwise Cipher" "${report}")"
-    mfp="$(extract_field "802.11w/MFP" "${report}")"
-    group="$(extract_field "Group Cipher" "${report}")"
+    akm="$(extract_colon_field "AKM" "${report}")"
+    pairwise="$(extract_colon_field "Pairwise Cipher" "${report}")"
+    group="$(extract_colon_field "Group Cipher" "${report}")"
+    mfp="$(extract_colon_field "802.11w/MFP" "${report}")"
 
     printf " %-20s %s\n" "AKM" "${akm}"
     printf " %-20s %s\n" "Pairwise Cipher" "${pairwise}"
@@ -127,8 +147,7 @@ show_dashboard() {
     ui_section "6 GHz / EHT"
 
     local sixghz
-
-    sixghz="$(extract_field "6 GHz Operating Class" "${report}")"
+    sixghz="$(extract_colon_field "6 GHz Operating Class" "${report}")"
 
     printf " %-20s %s\n" "Operating Class" "${sixghz}"
 
