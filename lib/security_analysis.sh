@@ -79,7 +79,7 @@ analyze_security() {
             else if (privacy)
                 security="WEP"
 
-            printf "%s|%s|%s|%s|%s|%d|%s|%d|%d\n",
+            printf "%s|%s|%s|%s|%s|%s|%d|%d|%d\n",
                 bssid, ssid, band, channel, signal, security,
                 mfp_required, mfp_capable, 0
         }
