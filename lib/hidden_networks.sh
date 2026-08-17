@@ -165,13 +165,13 @@ analyze_hidden() {
     local hidden_enterprise
     local hidden_other
 
-    hidden_count="$(awk -F'|' '$2=="" {c++} END {print c+0}' "${parsed}")"
-    hidden_wpa3="$(awk -F'|' '$2=="" && ($6=="WPA3-Personal" || $6=="WPA3-Enterprise") {c++} END {print c+0}' "${parsed}")"
-    hidden_wpa2="$(awk -F'|' '$2=="" && $6=="WPA2-PSK" {c++} END {print c+0}' "${parsed}")"
-    hidden_enterprise="$(awk -F'|' '$2=="" && $6=="Enterprise" {c++} END {print c+0}' "${parsed}")"
+    hidden_count="$(awk -F'|' '$2=="<hidden>" {c++} END {print c+0}' "${parsed}")"
+    hidden_wpa3="$(awk -F'|' '$2=="<hidden>" && ($6=="WPA3-Personal" || $6=="WPA3-Enterprise") {c++} END {print c+0}' "${parsed}")"
+    hidden_wpa2="$(awk -F'|' '$2=="<hidden>" && $6=="WPA2-PSK" {c++} END {print c+0}' "${parsed}")"
+    hidden_enterprise="$(awk -F'|' '$2=="<hidden>" && $6=="Enterprise" {c++} END {print c+0}' "${parsed}")"
 
     hidden_other="$(awk -F'|' '
-        $2=="" &&
+        $2=="<hidden>" &&
         $6!="WPA2-PSK" &&
         $6!="WPA3-Personal" &&
         $6!="WPA3-Enterprise" &&
@@ -205,7 +205,7 @@ analyze_hidden() {
             "----------" \
             "---------------"
 
-        awk -F'|' '$2=="" {
+        awk -F'|' '$2=="<hidden>" {
             printf "%-18s %-8s %-5s %-10s %-10s %-15s\n",
                 $1, $3, $4, $5 " dBm", "20 MHz", $6
         }' "${parsed}"
