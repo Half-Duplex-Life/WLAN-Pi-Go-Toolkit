@@ -64,8 +64,8 @@ analyze_channels() {
             if (width == "")
                 width="20"
 
-            printf "%s|%s|%s|%s|%s\n",
-                band, channel, signal, width, bssid
+            printf "%s|%s|%.0f|%.0f\n",
+                band, channel, signal, width
         }
 
         function reset() {
@@ -112,7 +112,9 @@ analyze_channels() {
 
         band_file="$(mktemp)"
 
-        awk -F'|' -v wanted="${band}" '$1 == wanted {print}' "${parsed}" > "${band_file}"
+        awk -F'|' -v wanted="${band}" '$1 == wanted {print}' \
+            "${parsed}" |
+            sort -t'|' -k2,2n > "${band_file}"
 
         if [[ ! -s "${band_file}" ]]; then
             echo " No BSSs observed."
@@ -121,7 +123,7 @@ analyze_channels() {
         fi
 
         printf " %-8s %-8s %-18s %-10s\n" \
-            "Channel" "BSSs" "Strongest" "Max Width"
+            "Channel" "BSSs" "Strongest RSSI" "Max Width"
 
         printf " %-8s %-8s %-18s %-10s\n" \
             "--------" "--------" "------------------" "----------"
@@ -142,11 +144,13 @@ analyze_channels() {
             }
 
             END {
-                for (ch in count)
-                    printf " %-8s %-8d %-16.2f dBm %-8d MHz\n",
+                for (ch in count) {
+                    printf " %-8s %-8d %-18d %d MHz\n",
                         ch, count[ch], strongest[ch], maxwidth[ch]
+                }
             }
-        ' "${band_file}" | sort -n -k2,2
+        ' "${band_file}" |
+        sort -n -k1,1
 
         rm -f "${band_file}"
     done
@@ -156,27 +160,28 @@ analyze_channels() {
 
     awk -F'|' '
         {
-            band=$1
-            ch=$2
+            key=$1 "|" $2
+            count[key]++
+
             rssi=$3 + 0
 
-            count[band "|" ch]++
-
-            if (!(band "|" ch in strongest) || rssi > strongest[band "|" ch])
-                strongest[band "|" ch]=rssi
+            if (!(key in strongest) || rssi > strongest[key])
+                strongest[key]=rssi
         }
 
         END {
-            for (key in count)
-                printf "%s|%s|%d|%.2f\n",
-                    key, count[key], strongest[key]
+            for (key in count) {
+                split(key, parts, "|")
+                printf "%s|%s|%d|%d\n",
+                    parts[1], parts[2], count[key], strongest[key]
+            }
         }
     ' "${parsed}" |
     sort -t'|' -k3,3nr |
     head -5 |
     awk -F'|' '
         {
-            printf " %-8s CH %-4s  BSSs %-3d  strongest %.2f dBm\n",
+            printf " %-8s CH %-4s  BSSs %-3d  strongest %d dBm\n",
                 $1, $2, $3, $4
         }
     '
@@ -203,7 +208,6 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
             echo
             exit 1
             ;;
-
     esac
 
 fi
