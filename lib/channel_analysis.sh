@@ -145,8 +145,9 @@ analyze_channels() {
 
             END {
                 for (ch in count) {
-                    printf " %-8s %-8d %-18d dBm %d MHz\n",
-                        ch, count[ch], strongest[ch], maxwidth[ch]
+                    rssi_text=sprintf("%d dBm", strongest[ch])
+                    printf " %-8s %-8d %-18s %d MHz\n",
+                        ch, count[ch], rssi_text, maxwidth[ch]
                 }
             }
         ' "${band_file}" |
