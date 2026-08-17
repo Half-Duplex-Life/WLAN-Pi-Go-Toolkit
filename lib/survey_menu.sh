@@ -69,23 +69,11 @@ do
             ;;
 
         6)
-            if [[ -x "${SCRIPT_DIR}/neighbor_inventory.sh" ]]; then
-                bash "${SCRIPT_DIR}/neighbor_inventory.sh" analyze
-            else
-                ui_title "NEIGHBOR INVENTORY"
-                ui_status_warn "Module not implemented yet."
-                ui_pause
-            fi
+            bash "${SCRIPT_DIR}/neighbor_inventory.sh" analyze
             ;;
 
         7)
-            if [[ -x "${SCRIPT_DIR}/export_survey.sh" ]]; then
-                bash "${SCRIPT_DIR}/export_survey.sh"
-            else
-                ui_title "EXPORT RF SURVEY"
-                ui_status_warn "Module not implemented yet."
-                ui_pause
-            fi
+            bash "${SCRIPT_DIR}/export_survey.sh" export
             ;;
 
         8)
