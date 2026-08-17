@@ -10,6 +10,7 @@ TOOLKIT_HOME="${SCRIPT_DIR}"
 
 source "${SCRIPT_DIR}/lib/common.sh"
 source "${SCRIPT_DIR}/lib/ui.sh"
+source "${SCRIPT_DIR}/lib/profiler.sh"
 
 show_status() {
     ui_title "TOOLKIT STATUS"
@@ -75,11 +76,11 @@ do
             ;;
 
         2)
-            not_implemented "ENTERPRISE WPA3 / WI-FI 7"
+            "${SCRIPT_DIR}/lib/profiler.sh" wpa3
             ;;
 
         3)
-            not_implemented "ENTERPRISE WPA2 / WI-FI 6"
+            "${SCRIPT_DIR}/lib/profiler.sh" wpa2
             ;;
 
         4)
