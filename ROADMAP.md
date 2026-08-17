@@ -29,3 +29,11 @@
 - Live WLAN Pi Go packet capture integration
 - Additional RF analysis
 - Additional client validation workflows
+
+## Phase 1 Capture Status
+
+- WLAN Pi Go Oscium capture service: validated
+- Oscium monitor interface osc0: validated
+- TCP capture service on port 6174: validated
+- Mac/Wireshark ARM64 ExtCap integration: blocked pending vendor guidance
+- Vendor ticket: #103228

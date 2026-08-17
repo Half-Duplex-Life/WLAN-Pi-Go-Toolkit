@@ -42,14 +42,41 @@ capture_status() {
     echo
     ui_section "WLAN PI GO STATUS"
 
+    local remote_status
+    remote_status="$(
+        ssh "${REMOTE_HOST}" '
+            printf "SERVICE="
+            systemctl is-active oscium-capture.service 2>/dev/null || true
+
+            printf "\nMONITOR="
+            if command -v iw >/dev/null 2>&1; then
+                if iw dev 2>/dev/null | grep -q "Interface osc0"; then
+                    echo "present"
+                else
+                    echo "missing"
+                fi
+            elif [[ -d /sys/class/net/osc0 ]]; then
+                echo "present"
+            else
+                echo "missing"
+            fi
+
+            printf "PORT="
+            if ss -ltn 2>/dev/null | grep -q ":6174 "; then
+                echo "active"
+            else
+                echo "inactive"
+            fi
+        '
+    )"
+
     local service_state
     local monitor_state
     local port_state
 
-    service_state="$(
-        ssh "${REMOTE_HOST}" \
-            "systemctl is-active oscium-capture.service 2>/dev/null || true"
-    )"
+    service_state="$(printf '%s\n' "${remote_status}" | sed -n 's/^SERVICE=//p')"
+    monitor_state="$(printf '%s\n' "${remote_status}" | sed -n 's/^MONITOR=//p')"
+    port_state="$(printf '%s\n' "${remote_status}" | sed -n 's/^PORT=//p')"
 
     if [[ "${service_state}" == "active" ]]; then
         ui_status_ok "oscium-capture.service is active"
@@ -57,28 +84,11 @@ capture_status() {
         ui_status_error "oscium-capture.service is not active"
     fi
 
-    monitor_state="$(
-        ssh "${REMOTE_HOST}" \
-            "if command -v iw >/dev/null 2>&1; then
-                 iw dev 2>/dev/null |
-                 awk '/Interface osc0/{found=1} found{print} /type monitor/{exit}'
-             elif [[ -d /sys/class/net/osc0 ]]; then
-                 echo 'Interface osc0 present'
-             fi"
-    )"
-
-    if [[ -n "${monitor_state}" ]]; then
+    if [[ "${monitor_state}" == "present" ]]; then
         ui_status_ok "Oscium monitor interface osc0 is present"
-        echo
-        echo "${monitor_state}"
     else
         ui_status_warn "Oscium monitor interface osc0 was not detected"
     fi
-
-    port_state="$(
-        ssh "${REMOTE_HOST}" \
-            "ss -ltn 2>/dev/null | grep -q ':${REMOTE_PORT} ' && echo active || true"
-    )"
 
     if [[ "${port_state}" == "active" ]]; then
         ui_status_ok "Oscium capture service listening on TCP ${REMOTE_PORT}"
@@ -91,6 +101,8 @@ capture_status() {
 
     echo " Native Mac/Wireshark Oscium capture integration is pending"
     echo " vendor-provided ARM64 ExtCap installation guidance."
+    echo
+    echo " Vendor ticket: #103228"
     echo
     echo " The WLAN Pi Go capture service is healthy."
     echo " The Go-side service is not the current blocker."
@@ -107,17 +119,18 @@ capture_status() {
     echo " Options 6 and 7 remain explicitly marked as pending"
     echo " until the Oscium ARM64 ExtCap workflow is available."
 
-    if [[ "${mode}" == "ota" ]]; then
-        echo
-        echo " OTA Capture is ready to activate once the vendor"
-        echo " ExtCap capture path is available."
-    fi
-
-    if [[ "${mode}" == "live" ]]; then
-        echo
-        echo " Live Wireshark Capture is ready to activate once"
-        echo " the vendor ExtCap appears in Wireshark."
-    fi
+    case "${mode}" in
+        ota)
+            echo
+            echo " OTA Capture is ready to activate once the vendor"
+            echo " ExtCap capture path is available."
+            ;;
+        live)
+            echo
+            echo " Live Wireshark Capture is ready to activate once"
+            echo " the vendor ExtCap appears in Wireshark."
+            ;;
+    esac
 
     ui_pause
 }
