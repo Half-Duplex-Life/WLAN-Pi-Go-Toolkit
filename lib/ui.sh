@@ -43,9 +43,10 @@ ui_title() {
 ui_section() {
 
     echo "$1"
-    echo
 
     printf '%*s\n' 60 '' | tr ' ' '-'
+
+    echo
 }
 
 ui_menu_item() {
