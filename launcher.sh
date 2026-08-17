@@ -68,7 +68,9 @@ do
     ui_footer
 
     read -rp "Selection: " CHOICE
-
+    echo
+    printf "[DEBUG] Choice received: [%s]\n" "${CHOICE}"
+    
     case "${CHOICE}" in
 
         1)
@@ -76,13 +78,13 @@ do
             ;;
 
         2)
-            echo
+            echo "[DEBUG] Entered option 2"
             ui_status_info "Launching 802.11be (EHT) WPA3 Profiler..."
             bash "${SCRIPT_DIR}/lib/profiler.sh" wpa3
             ;;
 
         3)
-            echo
+            echo "[DEBUG] Entered option 3"
             ui_status_info "Launching 802.11ax (HE) WPA2 Profiler..."
             bash "${SCRIPT_DIR}/lib/profiler.sh" wpa2
             ;;
@@ -104,7 +106,7 @@ do
             ;;
 
         8)
-            echo
+            echo "[DEBUG] Entered option 8"
             ui_status_info "Launching Client Profile Dashboard..."
             bash "${SCRIPT_DIR}/lib/dashboard.sh" show
             ;;
