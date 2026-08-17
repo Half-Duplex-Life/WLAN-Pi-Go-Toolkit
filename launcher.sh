@@ -119,15 +119,13 @@ do
             ;;
 
         6)
-            ui_title "OTA CAPTURE"
-            ui_status_warn "Module not implemented yet."
-            ui_pause
+            echo
+            bash "${SCRIPT_DIR}/lib/capture_status.sh" ota
             ;;
 
         7)
-            ui_title "LIVE WIRESHARK CAPTURE"
-            ui_status_warn "Module not implemented yet."
-            ui_pause
+            echo
+            bash "${SCRIPT_DIR}/lib/capture_status.sh" live
             ;;
 
         8)
