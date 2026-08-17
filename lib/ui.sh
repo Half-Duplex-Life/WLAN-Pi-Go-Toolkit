@@ -42,6 +42,8 @@ ui_title() {
 
 ui_section() {
 
+    echo
+
     echo "$1"
 
     printf '%*s\n' 60 '' | tr ' ' '-'
