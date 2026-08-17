@@ -145,7 +145,7 @@ analyze_channels() {
 
             END {
                 for (ch in count) {
-                    printf " %-8s %-8d %-18d %d MHz\n",
+                    printf " %-8s %-8d %-18d dBm %d MHz\n",
                         ch, count[ch], strongest[ch], maxwidth[ch]
                 }
             }
