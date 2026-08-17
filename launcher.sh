@@ -2,15 +2,13 @@
 
 ###############################################################################
 # WLAN Pi Wireless Engineering Toolkit
-# Main Launcher
+# Main Launcher - v1.0
 ###############################################################################
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TOOLKIT_HOME="${SCRIPT_DIR}"
 
 source "${SCRIPT_DIR}/lib/common.sh"
 source "${SCRIPT_DIR}/lib/ui.sh"
-source "${SCRIPT_DIR}/lib/profiler.sh"
 
 show_status() {
     ui_title "TOOLKIT STATUS"
@@ -25,31 +23,49 @@ show_status() {
         ui_status_warn "Wireless utility: iw not available"
     fi
 
-    if [[ -d "${TOOLKIT_HOME}/lib" ]]; then
+    if [[ -d "${SCRIPT_DIR}/lib" ]]; then
         ui_status_ok "Toolkit library directory available"
     fi
 
     ui_pause
 }
 
-not_implemented() {
+run_module() {
+    local title="$1"
+    shift
 
-    ui_title "$1"
-    ui_status_warn "Module not implemented yet."
-    ui_pause
+    if [[ ! -x "$1" ]]; then
+        ui_title "${title}"
+        ui_status_error "Module not found or not executable:"
+        echo
+        echo " $1"
+        ui_pause
+        return 1
+    fi
+
+    "$@"
 }
 
 while true
 do
     ui_clear
-    ui_header
+
+    ui_line
+    printf "        WLAN PI WIRELESS ENGINEERING TOOLKIT\n"
+    ui_line
+    echo
+
+    printf " Version:   %s\n" "${WET_VERSION}"
+    printf " Host:      %s\n" "$(hostname)"
+    printf " Date:      %s\n" "$(date)"
+    echo
 
     ui_section "SYSTEM"
     ui_menu_item "1" "Toolkit Status"
 
     ui_section "CLIENT PROFILER"
-    ui_menu_item "2" "Enterprise WPA3 / Wi-Fi 7"
-    ui_menu_item "3" "Enterprise WPA2 / Wi-Fi 6"
+    ui_menu_item "2" "802.11be (EHT) WPA3 Profiler"
+    ui_menu_item "3" "802.11ax (HE) WPA2 Profiler"
     ui_menu_item "4" "Voice Validation"
 
     ui_section "RF SURVEY"
@@ -65,12 +81,13 @@ do
     ui_section "UTILITIES"
     ui_menu_item "9" "Toolkit Configuration"
 
-    ui_footer
-
-    read -rp "Selection: " CHOICE
     echo
-    printf "[DEBUG] Choice received: [%s]\n" "${CHOICE}"
-    
+    ui_line
+    echo "Enter a selection, or 0 to exit."
+    echo
+
+    read -r -p "Selection: " CHOICE
+
     case "${CHOICE}" in
 
         1)
@@ -78,36 +95,51 @@ do
             ;;
 
         2)
-            echo "[DEBUG] Entered option 2"
+            echo
             ui_status_info "Launching 802.11be (EHT) WPA3 Profiler..."
+            echo
             bash "${SCRIPT_DIR}/lib/profiler.sh" wpa3
             ;;
 
         3)
-            echo "[DEBUG] Entered option 3"
+            echo
             ui_status_info "Launching 802.11ax (HE) WPA2 Profiler..."
+            echo
             bash "${SCRIPT_DIR}/lib/profiler.sh" wpa2
             ;;
 
         4)
-            not_implemented "VOICE VALIDATION"
+            ui_title "VOICE VALIDATION"
+            ui_status_warn "Module not implemented yet."
+            ui_pause
             ;;
 
         5)
-            not_implemented "RF SURVEY"
+            if [[ -x "${SCRIPT_DIR}/lib/survey.sh" ]]; then
+                bash "${SCRIPT_DIR}/lib/survey.sh" scan
+            else
+                ui_title "RF SURVEY"
+                ui_status_warn "Module not implemented yet."
+                ui_pause
+            fi
             ;;
 
         6)
-            not_implemented "OTA CAPTURE"
+            ui_title "OTA CAPTURE"
+            ui_status_warn "Module not implemented yet."
+            ui_pause
             ;;
 
         7)
-            not_implemented "LIVE WIRESHARK CAPTURE"
+            ui_title "LIVE WIRESHARK CAPTURE"
+            ui_status_warn "Module not implemented yet."
+            ui_pause
             ;;
 
         8)
-            echo "[DEBUG] Entered option 8"
+            echo
             ui_status_info "Launching Client Profile Dashboard..."
+            echo
             bash "${SCRIPT_DIR}/lib/dashboard.sh" show
             ;;
 
@@ -116,14 +148,17 @@ do
 
             printf " %-22s %s\n" "Name" "${WET_NAME}"
             printf " %-22s %s\n" "Version" "${WET_VERSION}"
-            printf " %-22s %s\n" "Toolkit Home" "${TOOLKIT_HOME}"
-            printf " %-22s %s\n" "Default Interface" "${DEFAULT_INTERFACE}"
+            printf " %-22s %s\n" "Source" "${SCRIPT_DIR}"
+            printf " %-22s %s\n" "Install Root" "${WET_INSTALL_ROOT}"
+            printf " %-22s %s\n" "Interface" "${DEFAULT_INTERFACE}"
+            printf " %-22s %s\n" "Go Host" "${WET_HOST}"
+            printf " %-22s %s\n" "Go User" "${WET_USER}"
 
             ui_pause
             ;;
 
         0)
-            ui_clear
+            clear
             exit 0
             ;;
 
