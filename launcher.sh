@@ -1,8 +1,9 @@
 #!/bin/bash
+export TERM="${TERM:-xterm}"
 
 ###############################################################################
 # WLAN Pi Wireless Engineering Toolkit
-# Main Launcher - v1.0
+# Main Launcher - v1.0.0
 ###############################################################################
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -64,22 +65,23 @@ do
     ui_menu_item "1" "Toolkit Status"
 
     ui_section "CLIENT PROFILER"
-    ui_menu_item "2" "802.11be (EHT) WPA3 Profiler"
-    ui_menu_item "3" "802.11ax (HE) WPA2 Profiler"
-    ui_menu_item "4" "Voice Validation"
+    ui_menu_item "2" "802.11ax (HE) WPA2 Profiler"
+    ui_menu_item "3" "802.11ax (HE) WPA3 Profiler"
+    ui_menu_item "4" "802.11be (EHT) WPA3 Profiler"
+    ui_menu_item "5" "Voice Validation [Planned - v1.x]"
 
     ui_section "RF SURVEY"
-    ui_menu_item "5" "Quick RF Survey"
+    ui_menu_item "6" "Quick RF Survey"
 
     ui_section "CAPTURE"
-    ui_menu_item "6" "OTA Capture"
-    ui_menu_item "7" "Live Wireshark Capture"
+    ui_menu_item "7" "OTA Capture"
+    ui_menu_item "8" "Live Wireshark Capture"
 
     ui_section "REPORTS"
-    ui_menu_item "8" "Client Profile Dashboard"
+    ui_menu_item "9" "Client Profile Dashboard"
 
     ui_section "UTILITIES"
-    ui_menu_item "9" "Toolkit Configuration"
+    ui_menu_item "10" "Toolkit Configuration"
 
     echo
     ui_line
@@ -96,29 +98,32 @@ do
 
         2)
             echo
-            ui_status_info "Launching 802.11be (EHT) WPA3 Profiler..."
-            echo
-            bash "${SCRIPT_DIR}/lib/profiler.sh" wpa3
-            ;;
-
-        3)
-            echo
             ui_status_info "Launching 802.11ax (HE) WPA2 Profiler..."
             echo
-            bash "${SCRIPT_DIR}/lib/profiler.sh" wpa2
+            bash "${SCRIPT_DIR}/lib/profiler.sh" ax-wpa2
             ;;
-
+        3)
+            echo
+            ui_status_info "Launching 802.11ax (HE) WPA3 Profiler..."
+            echo
+            bash "${SCRIPT_DIR}/lib/profiler.sh" ax-wpa3
+            ;;
         4)
+            echo
+            ui_status_info "Launching 802.11be (EHT) WPA3 Profiler..."
+            echo
+            bash "${SCRIPT_DIR}/lib/profiler.sh" be-wpa3
+            ;;
+        5)
             ui_title "VOICE VALIDATION"
-            ui_status_warn "Module not implemented yet."
+            ui_status_warn "Planned for the v1.x platform roadmap."
+            echo
+            echo " This workflow is not included in the v1.0 release."
+            echo " See ROADMAP.md for planned platform automation and"
+            echo " validation enhancements."
             ui_pause
             ;;
-
-        5)
-            bash "${SCRIPT_DIR}/lib/survey_menu.sh"
-            ;;
-
-        6)
+        10)
             echo
             bash "${SCRIPT_DIR}/lib/capture_status.sh" ota
             ;;

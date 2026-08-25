@@ -1,14 +1,16 @@
 #!/bin/bash
+export TERM="${TERM:-xterm}"
 
 ###############################################################################
 # WLAN Pi Wireless Engineering Toolkit
 # Capture Integration Status
 #
-# Phase 1:
-#   - Validate WLAN Pi Oscium capture service
-#   - Validate monitor interface
+# Capture integration:
+#   - Validate WLAN Pi Go Oscium capture service
+#   - Validate capture interface availability
 #   - Validate TCP/6174
-#   - Clearly report vendor dependency for native Mac/Wireshark capture
+#   - Report the supported MetaGeek OTA capture workflow
+#   - Report direct Wireshark ExtCap as vendor-engineering pending
 ###############################################################################
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -43,8 +45,8 @@ capture_status() {
     ui_section "WLAN PI GO STATUS"
 
     local remote_status
-    remote_status="$(
-        ssh "${REMOTE_HOST}" '
+    if [[ "$(uname -s 2>/dev/null)" == "Linux" ]] && command -v systemctl >/dev/null 2>&1; then
+        remote_status="$(
             printf "SERVICE="
             systemctl is-active oscium-capture.service 2>/dev/null || true
 
@@ -67,8 +69,35 @@ capture_status() {
             else
                 echo "inactive"
             fi
-        '
-    )"
+        )"
+    else
+        remote_status="$(
+            ssh "${REMOTE_HOST}" '
+                printf "SERVICE="
+                systemctl is-active oscium-capture.service 2>/dev/null || true
+
+                printf "\nMONITOR="
+                if command -v iw >/dev/null 2>&1; then
+                    if iw dev 2>/dev/null | grep -q "Interface osc0"; then
+                        echo "present"
+                    else
+                        echo "missing"
+                    fi
+                elif [[ -d /sys/class/net/osc0 ]]; then
+                    echo "present"
+                else
+                    echo "missing"
+                fi
+
+                printf "PORT="
+                if ss -ltn 2>/dev/null | grep -q ":6174 "; then
+                    echo "active"
+                else
+                    echo "inactive"
+                fi
+            '
+        )"
+    fi
 
     local service_state
     local monitor_state
@@ -99,36 +128,38 @@ capture_status() {
     echo
     ui_section "MAC / WIRESHARK INTEGRATION"
 
-    echo " Native Mac/Wireshark Oscium capture integration is pending"
-    echo " vendor-provided ARM64 ExtCap installation guidance."
+    echo " OTA Capture (Option 7): VALIDATED"
+    echo " WLAN Pi Go -> MetaGeek App -> PCAPNG -> Wireshark"
+    echo " Live Wireshark Capture (Option 8): VENDOR PENDING"
+    echo " WLAN Pi Go -> Oscium ARM64 ExtCap -> Wireshark"
     echo
-    echo " Vendor ticket: #103228"
+    echo " The direct Wireshark ExtCap compatibility issue has been"
+    echo " reproduced by vendor support and escalated to engineering."
     echo
     echo " The WLAN Pi Go capture service is healthy."
     echo " The Go-side service is not the current blocker."
 
     echo
-    ui_section "PHASE 1 STATUS"
+    ui_section "CAPTURE WORKFLOW STATUS"
 
-    ui_status_ok "Capture infrastructure validated"
-    ui_status_warn "Native OTA PCAP capture: vendor integration pending"
-    ui_status_warn "Live Wireshark capture: vendor integration pending"
+    ui_status_ok "OTA Capture (Option 7): validated via MetaGeek App + PCAPNG"
+    ui_status_warn "Live Wireshark Capture (Option 8): vendor engineering pending"
 
     echo
-    echo " The toolkit will not fabricate a capture result."
-    echo " Options 6 and 7 remain explicitly marked as pending"
-    echo " until the Oscium ARM64 ExtCap workflow is available."
+    echo " Option 7 is the current supported OTA capture workflow."
+    echo " Option 8 remains pending until the Oscium ARM64 ExtCap"
+    echo " compatibility issue is resolved and independently validated."
 
     case "${mode}" in
         ota)
             echo
-            echo " OTA Capture is ready to activate once the vendor"
-            echo " ExtCap capture path is available."
+            echo " OTA Capture uses the validated MetaGeek App workflow."
+            echo " Export the resulting PCAPNG and analyze it in Wireshark."
             ;;
         live)
             echo
-            echo " Live Wireshark Capture is ready to activate once"
-            echo " the vendor ExtCap appears in Wireshark."
+            echo " Live Wireshark Capture remains vendor-pending."
+            echo " Do not classify the MetaGeek PCAPNG workflow as live ExtCap."
             ;;
     esac
 

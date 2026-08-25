@@ -1,7 +1,43 @@
-*.log
-captures/
-reports/
+# ============================================================
+# WLAN Pi Wireless Engineering Toolkit
+# Public Repository Ignore Rules
+# ============================================================
+
+# Operating system metadata
 .DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
 *.tmp
+*.bak
+*.swp
+*.swo
+~$*.docx
+
+# Packet captures and generated engineering data
 *.pcap
 *.pcapng
+captures/
+reports/
+Survey_Exports/
+
+# Local release / publishing artifacts
+Releases/
+
+# IDE / editor state
+.vscode/
+.idea/
+
+# Generated caches
+__pycache__/
+*.pyc
+
+# Environment and secrets
+.env
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.*
+secrets.*

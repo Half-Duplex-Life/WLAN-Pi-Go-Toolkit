@@ -13,8 +13,9 @@ source "${TOOLKIT_HOME}/lib/ui.sh"
 
 REMOTE_PROFILER="/opt/wlanpi-profiler/bin/profiler"
 
-PROFILE_WPA3="${TOOLKIT_HOME}/profiles/wifi7-ft-wpa3-5g.ini"
-PROFILE_WPA2="${TOOLKIT_HOME}/profiles/wifi6-ft-wpa2-5g.ini"
+PROFILE_AX_WPA2="${TOOLKIT_HOME}/profiles/80211ax-he-wpa2-5g.ini"
+PROFILE_AX_WPA3="${TOOLKIT_HOME}/profiles/80211ax-he-wpa3-5g.ini"
+PROFILE_BE_WPA3="${TOOLKIT_HOME}/profiles/80211be-eht-wpa3-5g.ini"
 
 run_profile() {
 
@@ -66,30 +67,35 @@ run_profile() {
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
-    case "$1" in
-
-        wpa3)
+    case "${1:-}" in
+        ax-wpa2)
             run_profile \
-                "Enterprise WPA3 / Wi-Fi 7" \
-                "${PROFILE_WPA3}"
+                "802.11ax (HE) / WPA2" \
+                "${PROFILE_AX_WPA2}"
             ;;
 
-        wpa2)
+        ax-wpa3)
             run_profile \
-                "Enterprise WPA2 / Wi-Fi 6" \
-                "${PROFILE_WPA2}"
+                "802.11ax (HE) / WPA3" \
+                "${PROFILE_AX_WPA3}"
+            ;;
+
+        be-wpa3)
+            run_profile \
+                "802.11be (EHT) / WPA3" \
+                "${PROFILE_BE_WPA3}"
             ;;
 
         *)
             echo
             echo "Usage:"
             echo
-            echo "  profiler.sh wpa3"
-            echo "  profiler.sh wpa2"
+            echo "  profiler.sh ax-wpa2"
+            echo "  profiler.sh ax-wpa3"
+            echo "  profiler.sh be-wpa3"
             echo
             exit 1
             ;;
-
     esac
 
 fi
