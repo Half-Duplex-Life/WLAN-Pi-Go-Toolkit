@@ -123,26 +123,31 @@ do
             echo " validation enhancements."
             ui_pause
             ;;
-        10)
+
+        6)
             echo
-            bash "${SCRIPT_DIR}/lib/capture_status.sh" ota
+            bash "${SCRIPT_DIR}/lib/survey.sh" scan
             ;;
 
         7)
             echo
-            bash "${SCRIPT_DIR}/lib/capture_status.sh" live
+            bash "${SCRIPT_DIR}/lib/capture_status.sh" ota
             ;;
 
         8)
+            echo
+            bash "${SCRIPT_DIR}/lib/capture_status.sh" live
+            ;;
+
+        9)
             echo
             ui_status_info "Launching Client Profile Dashboard..."
             echo
             bash "${SCRIPT_DIR}/lib/dashboard.sh" show
             ;;
 
-        9)
+        10)
             ui_title "TOOLKIT CONFIGURATION"
-
             printf " %-22s %s\n" "Name" "${WET_NAME}"
             printf " %-22s %s\n" "Version" "${WET_VERSION}"
             printf " %-22s %s\n" "Source" "${SCRIPT_DIR}"
@@ -150,7 +155,6 @@ do
             printf " %-22s %s\n" "Interface" "${DEFAULT_INTERFACE}"
             printf " %-22s %s\n" "Go Host" "${WET_HOST}"
             printf " %-22s %s\n" "Go User" "${WET_USER}"
-
             ui_pause
             ;;
 

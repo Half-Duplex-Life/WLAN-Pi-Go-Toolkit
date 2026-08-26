@@ -206,6 +206,12 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     case "$1" in
 
         scan)
+            if ! refresh_snapshot >/dev/null; then
+                ui_title "RF SURVEY"
+                ui_status_error "Unable to refresh RF survey snapshot."
+                ui_pause
+                exit 1
+            fi
             show_survey
             ;;
 
