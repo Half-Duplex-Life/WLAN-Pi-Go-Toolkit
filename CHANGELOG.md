@@ -4,6 +4,14 @@ All notable changes to the WLAN Pi Wireless Engineering Platform are documented 
 
 ## 1.0.0 - Initial Public Release
 
+### Post-Release Validation Fixes
+
+- Corrected launcher action mappings for options 6 through 10.
+
+- Updated Quick RF Survey to acquire a fresh RF snapshot before analysis instead of reusing an existing snapshot indefinitely.
+
+- Validated the corrected launcher mappings and fresh RF survey workflow on WLAN Pi Go hardware.
+
 ### Platform
 
 - Established the WLAN Pi Wireless Engineering Platform architecture.
@@ -15,6 +23,8 @@ All notable changes to the WLAN Pi Wireless Engineering Platform are documented 
 ### Client Profiling
 
 - Added 802.11ax / Wi-Fi 6 WPA2 client profiling workflow.
+
+- Added 802.11ax / Wi-Fi 6/6E WPA3 client profiling workflow.
 - Added 802.11be / Wi-Fi 7 WPA3 client profiling workflow.
 - Added client profile dashboard.
 - Added public-safe lab profiler configuration templates.
