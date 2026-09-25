@@ -5,6 +5,8 @@ set -euo pipefail
 WET_HOST="${WET_HOST:-198.18.42.1}"
 WET_USER="${WET_USER:-wlanpi}"
 
+MAC_TIME="$(date '+%Y-%m-%d %H:%M:%S')"
+
 echo "============================================================"
 echo " WLAN Pi Go - Start Working Session"
 echo "============================================================"
@@ -12,8 +14,10 @@ echo
 echo "Target: ${WET_USER}@${WET_HOST}"
 echo
 
-ssh -o ConnectTimeout=5 "${WET_USER}@${WET_HOST}" 'bash -s' <<'REMOTE'
+ssh -o ConnectTimeout=5 "${WET_USER}@${WET_HOST}" "sudo date -s \"${MAC_TIME}\" >/dev/null && bash -s" <<'REMOTE'
 set -e
+
+echo "[OK] WLAN Pi Go time: $(date)"
 
 ROOT_MOUNT="$(mount | grep " on / type ext4 " || true)"
 

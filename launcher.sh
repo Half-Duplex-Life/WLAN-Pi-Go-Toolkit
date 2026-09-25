@@ -18,8 +18,18 @@ show_status() {
     ui_status_ok "Version ${WET_VERSION}"
     ui_status_ok "Host $(hostname)"
 
+    local iw_bin=""
+
     if command -v iw >/dev/null 2>&1; then
-        ui_status_ok "Wireless utility: iw available"
+        iw_bin="$(command -v iw)"
+    elif [[ -x /usr/sbin/iw ]]; then
+        iw_bin="/usr/sbin/iw"
+    elif [[ -x /sbin/iw ]]; then
+        iw_bin="/sbin/iw"
+    fi
+
+    if [[ -n "${iw_bin}" ]]; then
+        ui_status_ok "Wireless utility: iw available (${iw_bin})"
     else
         ui_status_warn "Wireless utility: iw not available"
     fi

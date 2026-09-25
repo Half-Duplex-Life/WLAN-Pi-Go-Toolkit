@@ -4,6 +4,12 @@ All notable changes to the WLAN Pi Wireless Engineering Platform are documented 
 
 ## 1.0.0 - Initial Public Release
 
+### Post-Publication Maintenance
+
+- Added WLAN Pi Go session-start clock synchronization using the workstation time.
+
+- Corrected toolkit detection of the `iw` wireless utility when installed under `/usr/sbin` or `/sbin`.
+
 ### Post-Release Validation Fixes
 
 - Corrected launcher action mappings for options 6 through 10.
